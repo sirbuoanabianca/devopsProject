@@ -1,5 +1,4 @@
 import React from 'react';
-import APIResponseErrorMessage from "../commons/errorhandling/api-response-error-message";
 import {
     Card,
     CardHeader,
@@ -7,20 +6,18 @@ import {
     ModalBody,
     ModalHeader,
 } from 'reactstrap';
-import ClientForm from "./components/client/client-form";
-import DeviceForm from "./components/device/device-form";
-import BindForm from "./components/device/bind-form";
+
+import ClientConsumptionChart from "./components/client/client-consumption";
+
 import ClientDevicesTable from './components/device/client-devices-table';
+import APIResponseErrorMessage from "../commons/errorhandling/api-response-error-message";
+
 
 import * as API_DEVICES from "./api/device-api"
-
-
+import SockJsClient from 'react-stomp'
+import Alert from 'reactstrap/lib/Alert';
 
 class ClientContainer extends React.Component {
-
-    // setErrorStatus= function(err){
-    //     this.setState() state.errorStatus=err;
-    // }
 
     constructor(props) {
         super(props);
@@ -28,14 +25,15 @@ class ClientContainer extends React.Component {
         this.deviceBindId = null;
         this.currentClientId = props.currentClientId;
         this.state = {
-            selectedClient: false,
-            selectedDevice: false,
-            selectedBind: false,
+            isVisibleViewConsumption: false,
+            device:null,
             collapseForm: false,
             clientTableData: [],
             deviceTableData: [],
             isLoadedClients: false,
             isLoadedDevices: false,
+            isCurrentClient:false,
+            alertMessage:null,
             errorStatus: 0,
             error: null
         };
@@ -62,9 +60,6 @@ class ClientContainer extends React.Component {
         });
     }
 
-
-
-
     reload() {
         this.setState({
             isLoadedDevices: false,
@@ -72,6 +67,15 @@ class ClientContainer extends React.Component {
         });
         this.fetchClientDevices();
     }
+
+    handleViewConsumptionClick = (device) =>{
+        this.setState({ isVisibleViewConsumption: !this.state.isVisibleViewConsumption, device:device });
+        
+    }
+
+    sendMessage = (msg) => {
+        this.clientRef.sendMessage('/topics/all', msg);
+      }
 
 
 
@@ -87,37 +91,39 @@ class ClientContainer extends React.Component {
                     <br />
                     <br />
 
-                    {this.state.isLoadedDevices && <ClientDevicesTable tableData={this.state.clientDevicesTableData} reload={this.reload} />}
+                    {this.state.isLoadedDevices && <ClientDevicesTable tableData={this.state.clientDevicesTableData} handleViewConsumptionClick={this.handleViewConsumptionClick} reload={this.reload} />}
                     {this.state.errorStatus > 0 && <APIResponseErrorMessage
                         errorStatus={this.state.errorStatus}
                         error={this.state.error}
                     />}
                 </Card>
 
-                <Modal isOpen={this.state.selectedClient} toggle={this.addClientForm}
+                <Modal isOpen={this.state.isVisibleViewConsumption} toggle={this.handleViewConsumptionClick}
                     className={this.props.className} size="lg">
-                    <ModalHeader toggle={this.addClientForm}> Add Client: </ModalHeader>
+                    <ModalHeader toggle={this.handleViewConsumptionClick}> Select date: </ModalHeader>
                     <ModalBody>
-                        <ClientForm reloadHandler={this.reload} />
+                        <ClientConsumptionChart reloadHandler={this.reload} device={this.state.device}/>
                     </ModalBody>
                 </Modal>
 
-                <Modal isOpen={this.state.selectedDevice} toggle={this.addDeviceForm}
-                    className={this.props.className} size="lg">
-                    <ModalHeader toggle={this.addDeviceForm}> Add Device: </ModalHeader>
-                    <ModalBody>
-                        <DeviceForm reloadHandler={this.reload} />
-                    </ModalBody>
-                </Modal>
+                <div>
+                <SockJsClient url='http://localhost:8080/gs-guide-websocket' topics={['/topic/greetings']}
+                    onMessage={(msg) => { 
+                        if(this.currentClientId == msg.user_id)
+                            {
+                                console.log(msg); 
+                                this.state.isCurrentClient=true; 
+                                this.state.alertMessage=msg.message
+                            }
+                            else
+                                this.state.isCurrentClient=false;
+            
+             }}
+                ref={ (client) => { this.clientRef = client }} />
+            {this.state.isCurrentClient && <Alert severity="error">{this.state.alertMessage}</Alert>}
 
-                <Modal isOpen={this.state.selectedBind} toggle={this.addBindForm}
-                    className={this.props.className} size="lg">
-                    <ModalHeader toggle={this.addBindForm}> Bind device to user: </ModalHeader>
-                    <ModalBody>
-                        <BindForm reloadHandler={this.reload} tableData={this.state.clientTableData} handleSubmit={this.handleBindSubmit} />
-                    </ModalBody>
-                </Modal>
-
+            </div>
+                
             </div >
         )
 

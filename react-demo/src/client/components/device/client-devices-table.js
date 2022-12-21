@@ -29,6 +29,7 @@ function ClientDevicesTable(props) {
                             <th>Address</th>
                             <th>Owner</th>
                             <th>Maximum hourly consumption [kWh]</th>
+                            <th>Action</th>
 
                         </tr>
                     </thead>
@@ -38,7 +39,7 @@ function ClientDevicesTable(props) {
 
                                 <ClientDevicesRow
                                     device={device}
-
+                                    handleViewConsumptionClick={props.handleViewConsumptionClick}
                                 />
 
                             </Fragment>

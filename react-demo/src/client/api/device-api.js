@@ -5,6 +5,7 @@ import RestApiClient from "../../commons/api/rest-client";
 const endpoint = {
     device: '/device/',
     bind: '/device/bind',
+    consumptionRecords:'/consumptionRecord/'
 };
 function getDevices(callback) {
     let request = new Request(HOST.backend_api + endpoint.device, {
@@ -81,11 +82,20 @@ function bindDeviceToUser(deviceId, userId, callback) {
     RestApiClient.performRequest(request, callback);
 }
 
+function getDeviceRecordsByDay(date,id, callback) {
+    let request = new Request(HOST.backend_api + endpoint.consumptionRecords + 'fromDay/'+'?id=' + id + '&' + 'date='+date, {
+        method: 'GET',
+    });
+    console.log(request.url);
+    RestApiClient.performRequest(request, callback);
+}
+
 export {
     getDevices,
     postDevice,
     updateDevice,
     deleteDevice,
     bindDeviceToUser,
-    getDeviceByUserId
+    getDeviceByUserId,
+    getDeviceRecordsByDay,
 };

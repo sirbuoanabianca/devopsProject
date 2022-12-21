@@ -36,6 +36,7 @@ public class ClientController {
         this.deviceService = deviceService;
     }
 
+
     @GetMapping()
     public ResponseEntity<List<ClientDTO>> getClients() {
         List<ClientDTO> dtos = clientService.findClients();

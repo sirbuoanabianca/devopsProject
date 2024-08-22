@@ -47,7 +47,7 @@ public class RabbitmqService {
     GreetingController greetingController;
 
     public RabbitmqService(DeviceRepository deviceRepository) throws IOException, TimeoutException, URISyntaxException, NoSuchAlgorithmException, KeyManagementException {
-        connectionFactory.setUri("amqps://rfaidbvx:H1Kh0UcL4nLAkFsEecTBiAC7Jbv40hBW@stingray.rmq.cloudamqp.com/rfaidbvx");
+        connectionFactory.setUri("amqps://ineijnen:U2ArrDltqqW94M9-A2QXw5jR82v45x6D@whale.rmq.cloudamqp.com/ineijnen");
         connection = connectionFactory.newConnection();
         channel = connection.createChannel();
         channel.queueDeclare("consumption_simulator", false, false, false, null);

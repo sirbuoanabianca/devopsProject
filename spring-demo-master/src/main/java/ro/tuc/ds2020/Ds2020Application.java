@@ -18,8 +18,6 @@ import java.util.TimeZone;
 @Validated
 public class Ds2020Application extends SpringBootServletInitializer {
 
-
-
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(Ds2020Application.class);

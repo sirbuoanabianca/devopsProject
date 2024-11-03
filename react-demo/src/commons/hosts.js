@@ -1,3 +1,3 @@
 export const HOST = {
-    backend_api: 'http://backend-service:8080',
+    backend_api: 'http://192.168.0.194:32000',
 };

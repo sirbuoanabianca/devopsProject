@@ -107,7 +107,7 @@ class ClientContainer extends React.Component {
                 </Modal>
 
                 <div>
-                <SockJsClient url='http://localhost:8080/gs-guide-websocket' topics={['/topic/greetings']}
+                <SockJsClient url='http://backend-service:8080/gs-guide-websocket' topics={['/topic/greetings']}
                     onMessage={(msg) => { 
                         if(this.currentClientId == msg.user_id)
                             {
